@@ -8,4 +8,5 @@ router.register(r'job-applications', JobApplicationViewSet, basename='jobapplica
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('api/applications/<int:application_id>/schedule-interview/', JobApplicationViewSet.as_view({'post': 'schedule_interview'}), name='schedule-interview'),
 ]
