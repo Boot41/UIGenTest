@@ -18,3 +18,10 @@ class JobListing(models.Model):
 
     def __str__(self):
         return self.title
+
+class JobApplication(models.Model):
+    job_listing = models.ForeignKey(JobListing, related_name='applications', on_delete=models.CASCADE)
+    seeker_id = models.IntegerField()  # Assuming seeker_id is an integer, can be modified to a ForeignKey if needed
+    resume = models.TextField()  # Assuming resumes are stored as text (could be modified to a FileField)
+    applied_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=50, default='Pending')  # status can be 'Pending', 'Accepted', 'Rejected'
