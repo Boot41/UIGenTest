@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register(r'jobs', JobListingViewSet, basename='joblisting')
 
 urlpatterns = [
-    path('employers/<int:employer_id>/', include(router.urls)),
+    path('api/', include(router.urls)),
 ]
