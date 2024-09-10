@@ -12,6 +12,7 @@ class JobListing(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     location = models.CharField(max_length=255)
+    job_type = models.CharField(max_length=100)
     posted_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
