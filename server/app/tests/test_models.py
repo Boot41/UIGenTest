@@ -1,11 +1,13 @@
 from django.test import TestCase
 from .models import Employer, JobListing
 
-class JobListingModelTests(TestCase):
-    def setUp(self):
-        self.employer = Employer.objects.create(name='Employer 1', email='employer1@example.com')
+class EmployerModelTests(TestCase):
+    def test_string_representation(self):
+        employer = Employer(name='Test Employer')
+        self.assertEqual(str(employer), employer.name)
 
-    def test_job_listing_creation(self):
-        job_listing = JobListing.objects.create(employer=self.employer, title='Engineer', description='Test', location='Remote', is_active=True)
-        self.assertEqual(job_listing.title, 'Engineer')
-        self.assertEqual(job_listing.employer, self.employer)
+class JobListingModelTests(TestCase):
+    def test_string_representation(self):
+        employer = Employer.objects.create(name='Test Employer', email='employer@example.com')
+        job_listing = JobListing(employer=employer, title='Software Engineer')
+        self.assertEqual(str(job_listing), job_listing.title)

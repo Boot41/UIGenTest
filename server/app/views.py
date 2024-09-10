@@ -17,3 +17,17 @@ class JobListingViewSet(viewsets.ViewSet):
         job_listings = employer.jobs.filter(is_active=True)
         serializer = JobListingSerializer(job_listings, many=True)
         return Response(serializer.data)
+
+    def update(self, request, job_id):
+        job_listing = get_object_or_404(JobListing, id=job_id, employer=request.user)
+        serializer = JobListingSerializer(job_listing, data=request.data)
+        if serializer.is_valid():
+            job_listing = serializer.save()
+            return Response(JobListingSerializer(job_listing).data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, job_id):
+        job_listing = get_object_or_404(JobListing, id=job_id, employer=request.user)
+        job_listing.is_active = False
+        job_listing.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
