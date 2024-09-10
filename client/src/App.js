@@ -6,8 +6,8 @@ import EditJobPage from './pages/EditJobPage';
 import JobSearchPage from './pages/JobSearchPage'; 
 import JobDetailPage from './pages/JobDetailPage'; 
 import JobApplicationPage from './pages/JobApplicationPage'; 
-import EditApplicationPage from './pages/EditApplicationPage'; // Import EditApplicationPage
-import ApplicationTrackingPage from './pages/ApplicationTrackingPage'; // Import ApplicationTrackingPage
+import EditApplicationPage from './pages/EditApplicationPage'; 
+import ApplicationTrackingPage from './pages/ApplicationTrackingPage'; 
 
 function App() {
   return (
@@ -24,8 +24,8 @@ function App() {
         <Route path="/job-search" element={<JobSearchPage />} />
         <Route path="/job-detail" element={<JobDetailPage />} />
         <Route path="/job-application" element={<JobApplicationPage />} />
-        <Route path="/edit-application" element={<EditApplicationPage />} /> {/* Added EditApplicationPage route */}
-        <Route path="/application-tracking" element={<ApplicationTrackingPage />} /> {/* Added ApplicationTrackingPage route */}
+        <Route path="/edit-application" element={<EditApplicationPage />} /> 
+        <Route path="/application-tracking" element={<ApplicationTrackingPage />} /> 
       </Routes>
       <Footer />
     </Router>
