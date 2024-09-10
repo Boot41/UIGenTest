@@ -25,3 +25,8 @@ class JobApplication(models.Model):
     resume = models.TextField()  # Assuming resumes are stored as text (could be modified to a FileField)
     applied_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50, default='Pending')  # status can be 'Pending', 'Accepted', 'Rejected'
+
+class ApplicationStatus(models.TextChoices):
+    PENDING = 'Pending', 'Pending'
+    ACCEPTED = 'Accepted', 'Accepted'
+    REJECTED = 'Rejected', 'Rejected'
