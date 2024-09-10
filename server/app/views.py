@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import JobListing, Employer
+from .models import JobListing
 from .serializers import JobListingSerializer
 
 class JobListingViewSet(viewsets.ViewSet):
@@ -30,6 +30,11 @@ class JobListingViewSet(viewsets.ViewSet):
 
         job_listings = JobListing.objects.filter(is_active=True, **filters)
         serializer = JobListingSerializer(job_listings, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, job_id):
+        job_listing = get_object_or_404(JobListing, id=job_id)
+        serializer = JobListingSerializer(job_listing)
         return Response(serializer.data)
 
     def update(self, request, job_id):

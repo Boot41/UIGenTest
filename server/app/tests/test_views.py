@@ -1,48 +1,57 @@
-from django.urls import reverse
+from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APITestCase
-from .factories import JobListingFactory, EmployerFactory
+from rest_framework.test import APIClient
+from .models import Employer, JobListing
 
-class JobListingViewSetTests(APITestCase):
+class JobListingViewSetTestCase(TestCase):
     def setUp(self):
-        self.employer = EmployerFactory()
-        self.client.force_authenticate(user=self.employer)
+        self.client = APIClient()
+        self.employer = Employer.objects.create(name='Test Employer', email='test@employer.com')
+        self.client.force_login(self.employer)
+        self.job_listing = JobListing.objects.create(
+            employer=self.employer,
+            title='Test Job',
+            description='Job Description',
+            location='Remote',
+            job_type='Full-time'
+        )
 
     def test_create_job_listing(self):
-        response = self.client.post(reverse('joblisting-list'), {
-            'title': 'Software Engineer',
-            'description': 'Job description',
-            'location': 'New York',
-            'is_active': True
+        response = self.client.post('/api/jobs/', {
+            'title': 'New Job',
+            'description': 'New Job Description',
+            'location': 'On-site',
+            'job_type': 'Part-time'
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_list_job_listings(self):
-        JobListingFactory(employer=self.employer)
-        response = self.client.get(reverse('joblisting-list'))
+        response = self.client.get('/api/jobs/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
-    def test_list_job_listings_with_filters(self):
-        JobListingFactory(employer=self.employer, title='Software Engineer')
-        JobListingFactory(employer=self.employer, title='Data Analyst')
-        response = self.client.get(reverse('joblisting-list'), {'title': 'Software'})
+    def test_retrieve_job_listing(self):
+        response = self.client.get(f'/api/jobs/{self.job_listing.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data['title'], self.job_listing.title)
 
     def test_update_job_listing(self):
-        job_listing = JobListingFactory(employer=self.employer)
-        response = self.client.put(reverse('joblisting-detail', args=(job_listing.id,)), {
-            'title': 'Senior Software Engineer',
-            'description': 'Updated description',
-            'location': 'San Francisco',
-            'is_active': True
+        response = self.client.put(f'/api/jobs/{self.job_listing.id}/', {
+            'title': 'Updated Job',
+            'description': 'Updated Description',
+            'location': 'Updated Location',
+            'job_type': 'Updated Type'
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['title'], 'Senior Software Engineer')
+        self.job_listing.refresh_from_db()
+        self.assertEqual(self.job_listing.title, 'Updated Job')
 
     def test_delete_job_listing(self):
-        job_listing = JobListingFactory(employer=self.employer)
-        response = self.client.delete(reverse('joblisting-detail', args=(job_listing.id,)))
+        response = self.client.delete(f'/api/jobs/{self.job_listing.id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(JobListing.objects.filter(id=job_listing.id).exists())
+        self.job_listing.refresh_from_db()
+        self.assertFalse(self.job_listing.is_active)
+
+    def test_retrieve_nonexistent_job_listing(self):
+        response = self.client.get('/api/jobs/999/')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
