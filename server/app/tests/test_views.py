@@ -35,3 +35,16 @@ class JobApplicationTests(APITestCase):
         application = JobApplication.objects.create(job_listing=self.job_listing, seeker_id=1, resume='Test Resume')
         response = self.client.put(f'/api/applications/{application.id}/status/', {'status': 'InvalidStatus'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_schedule_interview(self):
+        application = JobApplication.objects.create(job_listing=self.job_listing, seeker_id=1, resume='Test Resume')
+        response = self.client.post(f'/api/applications/{application.id}/schedule-interview/', {'interview_time': '2023-10-01T10:00:00Z'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        application.refresh_from_db()
+        self.assertEqual(application.status, 'Scheduled for Interview')
+
+    def test_schedule_interview_missing_time(self):
+        application = JobApplication.objects.create(job_listing=self.job_listing, seeker_id=1, resume='Test Resume')
+        response = self.client.post(f'/api/applications/{application.id}/schedule-interview/', {})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'Interview time is required.')

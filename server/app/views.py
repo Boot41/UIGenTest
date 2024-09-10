@@ -33,3 +33,13 @@ class JobApplicationViewSet(viewsets.ViewSet):
         application = get_object_or_404(JobApplication, id=application_id)
         application.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def schedule_interview(self, request, application_id):
+        application = get_object_or_404(JobApplication, id=application_id)
+        interview_time = request.data.get('interview_time')
+        if not interview_time:
+            return Response({'error': 'Interview time is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        # Logic to schedule the interview
+        application.status = 'Scheduled for Interview'
+        application.save()
+        return Response(JobApplicationSerializer(application).data, status=status.HTTP_200_OK)
