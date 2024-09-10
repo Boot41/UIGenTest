@@ -20,3 +20,16 @@ class JobApplicationViewSet(viewsets.ViewSet):
         applications = JobApplication.objects.filter(seeker_id=seeker_id)
         serializer = JobApplicationSerializer(applications, many=True)
         return Response(serializer.data)
+
+    def update(self, request, application_id):
+        application = get_object_or_404(JobApplication, id=application_id, seeker_id=request.user.id)
+        serializer = JobApplicationSerializer(application, data=request.data, partial=True)
+        if serializer.is_valid():
+            updated_application = serializer.save()
+            return Response(JobApplicationSerializer(updated_application).data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, application_id):
+        application = get_object_or_404(JobApplication, id=application_id, seeker_id=request.user.id)
+        application.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,34 +1,43 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
-from .models import JobListing, JobApplication
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+from .models import JobListing, JobApplication
 
 class JobApplicationTests(APITestCase):
     def setUp(self):
-        self.employer = Employer.objects.create(name='Test Employer', email='employer@example.com')
-        self.job_listing = JobListing.objects.create(employer=self.employer, title='Test Job', description='Job Description', location='Remote', job_type='Full-time')
-        self.seeker_id = 1  # Assuming seeker_id to be an integer
+        self.job_listing = JobListing.objects.create(
+            employer_id=1,
+            title='Software Engineer',
+            description='Develop applications',
+            location='Remote',
+            job_type='Full-time',
+            is_active=True
+        )
+        self.application = JobApplication.objects.create(
+            job_listing=self.job_listing,
+            seeker_id=1,
+            resume='My resume content'
+        )
+        self.valid_data = {'resume': 'Updated resume content'}
+        self.invalid_data = {'resume': ''}
 
-    def test_apply_for_job_success(self):
-        url = reverse('jobapplication-list', kwargs={'job_id': self.job_listing.id})
-        data = {'resume': 'Sample Resume'}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    def test_update_job_application(self):
+        url = reverse('jobapplication-detail', args=[self.application.id])
+        response = self.client.put(url, self.valid_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['resume'], 'Updated resume content')
 
-    def test_apply_for_job_invalid_data(self):
-        url = reverse('jobapplication-list', kwargs={'job_id': self.job_listing.id})
-        data = {}  # Empty data to trigger validation error
-        response = self.client.post(url, data, format='json')
+    def test_update_job_application_invalid_data(self):
+        url = reverse('jobapplication-detail', args=[self.application.id])
+        response = self.client.put(url, self.invalid_data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_list_applications_success(self):
-        # Create a job application first
-        url = reverse('jobapplication-list', kwargs={'seeker_id': self.seeker_id})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_withdraw_job_application(self):
+        url = reverse('jobapplication-detail', args=[self.application.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_list_applications_no_applications(self):
-        url = reverse('jobapplication-list', kwargs={'seeker_id': 2})  # Assuming seeker_id 2 has no applications
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, [])
+    def test_withdraw_non_existent_application(self):
+        url = reverse('jobapplication-detail', args=[999])  # Non-existent ID
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
