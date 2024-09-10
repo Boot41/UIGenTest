@@ -1,184 +1,137 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 
 const JobPostingForm = () => {
-  const history = useHistory();
   const [formData, setFormData] = useState({
-    title: "",
+    jobTitle: "",
     description: "",
     requirements: "",
     location: "",
     jobType: "",
-    deadline: ""
+    applicationDeadline: "",
   });
-
-  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const validate = () => {
-    const newErrors = {};
-    for (const key in formData) {
-      if (!formData[key]) newErrors[key] = "This field is required.";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
+  const postJobHandler = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
-
+    // Basic client-side validation
+    const { jobTitle, description, requirements, location, jobType, applicationDeadline } = formData;
+    if (!jobTitle || !description || !requirements || !location || !jobType || !applicationDeadline) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    
     try {
       const response = await fetch("/api/jobs", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
       if (response.ok) {
-        history.push("/dashboard");
+        // Navigate to dashboard on successful submission
+        window.location.href = "/dashboard";
       } else {
-        alert("Failed to post job. Please try again.");
+        alert("There was an error submitting your job listing.");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while posting the job.");
+      console.error("Error during job submission:", error);
+      alert("There was an error submitting your job listing.");
     }
   };
 
   return (
-    <form 
-      onSubmit={handleSubmit}
-      style={{
-        backgroundColor: "#F5F5F5",
-        padding: "20px",
-        borderRadius: "8px",
-        boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-        maxWidth: "600px",
-        margin: "auto"
-      }}
-      aria-label="Job Posting Form"
-    >
-      <label htmlFor="title">Job Title</label>
-      <input
-        id="title"
-        name="title"
-        value={formData.title}
-        onChange={handleChange}
-        required
-        style={{
-          padding: "12px",
-          borderRadius: "5px",
-          border: "1px solid #ccc"
-        }}
-      />
-      {errors.title && <span style={{ color: "red" }}>{errors.title}</span>}
-
-      <label htmlFor="description">Description</label>
-      <textarea
-        id="description"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-        required
-        style={{
-          padding: "12px",
-          borderRadius: "5px",
-          border: "1px solid #ccc"
-        }}
-      />
-      {errors.description && <span style={{ color: "red" }}>{errors.description}</span>}
-
-      <label htmlFor="requirements">Requirements</label>
-      <textarea
-        id="requirements"
-        name="requirements"
-        value={formData.requirements}
-        onChange={handleChange}
-        required
-        style={{
-          padding: "12px",
-          borderRadius: "5px",
-          border: "1px solid #ccc"
-        }}
-      />
-      {errors.requirements && <span style={{ color: "red" }}>{errors.requirements}</span>}
-
-      <label htmlFor="location">Location</label>
-      <input
-        id="location"
-        name="location"
-        value={formData.location}
-        onChange={handleChange}
-        required
-        style={{
-          padding: "12px",
-          borderRadius: "5px",
-          border: "1px solid #ccc"
-        }}
-      />
-      {errors.location && <span style={{ color: "red" }}>{errors.location}</span>}
-
-      <label htmlFor="jobType">Job Type</label>
-      <select
-        id="jobType"
-        name="jobType"
-        value={formData.jobType}
-        onChange={handleChange}
-        required
-        style={{
-          padding: "12px",
-          borderRadius: "5px",
-          border: "1px solid #ccc"
-        }}
-      >
-        <option value="">Select</option>
-        <option value="full-time">Full-Time</option>
-        <option value="part-time">Part-Time</option>
-        <option value="contract">Contract</option>
-      </select>
-      {errors.jobType && <span style={{ color: "red" }}>{errors.jobType}</span>}
-
-      <label htmlFor="deadline">Application Deadline</label>
-      <input
-        id="deadline"
-        name="deadline"
-        type="date"
-        value={formData.deadline}
-        onChange={handleChange}
-        required
-        style={{
-          padding: "12px",
-          borderRadius: "5px",
-          border: "1px solid #ccc"
-        }}
-      />
-      {errors.deadline && <span style={{ color: "red" }}>{errors.deadline}</span>}
-
-      <button 
+    <form onSubmit={postJobHandler} className="max-w-lg mx-auto p-4 space-y-4">
+      <div>
+        <label htmlFor="jobTitle" className="block text-lg font-medium">Job Title</label>
+        <input
+          type="text"
+          name="jobTitle"
+          id="jobTitle"
+          className="w-full p-4 rounded border border-gray-300"
+          value={formData.jobTitle}
+          onChange={handleChange}
+          aria-required="true"
+        />
+      </div>
+      <div>
+        <label htmlFor="description" className="block text-lg font-medium">Description</label>
+        <textarea
+          name="description"
+          id="description"
+          className="w-full p-4 rounded border border-gray-300"
+          value={formData.description}
+          onChange={handleChange}
+          aria-required="true"
+        />
+      </div>
+      <div>
+        <label htmlFor="requirements" className="block text-lg font-medium">Requirements</label>
+        <textarea
+          name="requirements"
+          id="requirements"
+          className="w-full p-4 rounded border border-gray-300"
+          value={formData.requirements}
+          onChange={handleChange}
+          aria-required="true"
+        />
+      </div>
+      <div>
+        <label htmlFor="location" className="block text-lg font-medium">Location</label>
+        <input
+          type="text"
+          name="location"
+          id="location"
+          className="w-full p-4 rounded border border-gray-300"
+          value={formData.location}
+          onChange={handleChange}
+          aria-required="true"
+        />
+      </div>
+      <div>
+        <label htmlFor="jobType" className="block text-lg font-medium">Job Type</label>
+        <select
+          name="jobType"
+          id="jobType"
+          className="w-full p-4 rounded border border-gray-300"
+          value={formData.jobType}
+          onChange={handleChange}
+          aria-required="true"
+        >
+          <option value="">Select...</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Contract">Contract</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="applicationDeadline" className="block text-lg font-medium">Application Deadline</label>
+        <input
+          type="date"
+          name="applicationDeadline"
+          id="applicationDeadline"
+          className="w-full p-4 rounded border border-gray-300"
+          value={formData.applicationDeadline}
+          onChange={handleChange}
+          aria-required="true"
+        />
+      </div>
+      <button
         type="submit"
+        className="w-full max-w-xs p-4 rounded text-white font-bold"
         style={{
-          padding: "12px",
-          backgroundColor: "#007BFF",
-          color: "#FFF",
-          border: "none",
-          borderRadius: "5px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          transition: "background-color 0.3s"
+          backgroundColor: "#1e1236",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+          transition: "background-color 0.3s",
         }}
-        onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#0056b3")}
-        onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#007BFF")}
+        onMouseEnter={(e) => (e.target.style.backgroundColor = "#b89aff")}
+        onMouseLeave={(e) => (e.target.style.backgroundColor = "#1e1236")}
       >
-        Post Job
+        Submit
       </button>
     </form>
   );
