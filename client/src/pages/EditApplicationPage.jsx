@@ -1,5 +1,5 @@
 import React from 'react';
-import { ApplicationEditForm } from './ApplicationEditForm';
+import ApplicationEditForm  from '../components/ApplicationEditForm';
 
 const EditApplicationPage = () => {
   return (

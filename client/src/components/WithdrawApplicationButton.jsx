@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const WithdrawApplicationButton = ({ applicationId }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const history = useHistory();
+  const history = useNavigate();
 
   const handleWithdraw = async () => {
     try {
       await axios.delete(`/api/applications/${applicationId}`);
       // Notify user of successful withdrawal and refresh
-      history.push('/application-tracking');
+      history('/application-tracking');
     } catch (error) {
       // Handle error appropriately (e.g., show notification)
     }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import JobPostingForm from './JobPostingForm';
-import JobListingManager from './JobListingManager';
-import JobPostSuccessNotification from './JobPostSuccessNotification';
+import JobPostingForm from '../components/JobPostingForm';
+import JobListingManager from '../components/JobListingManager';
+import JobPostSuccessNotification from '../components/JobPostSuccessNotification';
 
 const EmployerDashboard = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);

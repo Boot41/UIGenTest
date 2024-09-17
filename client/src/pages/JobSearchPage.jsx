@@ -1,6 +1,6 @@
 import React from 'react';
-import JobSearchFilter from './JobSearchFilter';
-import JobListing from './JobListing';
+import JobSearchFilter from '../components/JobSearchFilter';
+import JobListing from '../components/JobListing';
 
 const JobSearchPage = () => {
   return (

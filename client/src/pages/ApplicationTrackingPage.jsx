@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import ApplicationStatusTracker from './ApplicationStatusTracker';
-import WithdrawApplicationButton from './WithdrawApplicationButton';
+import ApplicationStatusTracker from '../components/ApplicationStatusTracker';
+import WithdrawApplicationButton from '../components/WithdrawApplicationButton';
 
 const ApplicationTrackingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

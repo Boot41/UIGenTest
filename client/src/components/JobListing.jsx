@@ -28,13 +28,13 @@ const JobListing = () => {
 
   const handleSort = (e) => {
     setSortOption(e.target.value);
-    const sortedJobs = [...filteredJobs].sort((a, b) => /* sort logic based on sortOption */);
+    const sortedJobs = [...filteredJobs].sort((a, b) => []);
     setFilteredJobs(sortedJobs);
   };
 
   const handleFilter = (e) => {
     setFilterOption(e.target.value);
-    const filtered = jobs.filter(job => /* filter logic based on filterOption */);
+    const filtered = jobs.filter(job => []);
     setFilteredJobs(filtered);
   };
 
